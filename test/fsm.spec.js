@@ -7,7 +7,7 @@ const config = {
     initial: 'normal',
     states: {
         normal: {
-            transitions: {
+            transitions : {
                 study: 'busy',
             }
         },
