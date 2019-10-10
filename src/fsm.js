@@ -15,6 +15,7 @@ class FSM {
         this.config.state = this.config.initial;
         this.undoStack = [];
         this.redoStack = [];
+
     }
 
     /**
@@ -39,6 +40,8 @@ class FSM {
             }
             this.config.state = state;
             this.undoStack.push(this.config.state);
+            this.redoStack.length = 0;
+
         }else {
             throw new Error('state isn\'t exist');
         }
@@ -74,9 +77,23 @@ class FSM {
             if (event !== key) {
                 continue;
             }
-             this.changeState(newState[key]);
-           // this.undoStack.push(this.changeState(newState[key]));
+
+
+            if(newState[key] in  this.config.states){
+
+                if(this.undoStack.length === 0 && newState[key] !== this.config.initial.toString()){
+
+                    this.undoStack.push(this.getState().toString());
+                }
+                this.config.state = newState[key];
+                this.undoStack.push(this.config.state);
+
+            }else {
+                throw new Error('state isn\'t exist');
+            }
+
             checkEvent = false;
+
         }
 
         if(checkEvent) {
@@ -146,8 +163,10 @@ class FSM {
             }
 
 
-            this.changeState(this.undoStack.pop());
-
+            // this.changeState(this.undoStack.pop());
+            //
+            this.config.state = this.undoStack.pop();
+            this.undoStack.push(this.config.state);
             return true;
         }
 
@@ -168,7 +187,12 @@ class FSM {
             }
             let redoState = this.redoStack.pop();
             this.undoStack.push(redoState);
-            this.changeState(redoState);
+            // this.changeState(redoState);
+
+
+            this.config.state = redoState;
+            this.undoStack.push(this.config.state);
+
             return true;
         }
 
@@ -216,14 +240,20 @@ module.exports = FSM;
 // const student = new FSM(config);
 //
 //
-// student.changeState('hungry');
+// student.trigger('study');
 // student.undo();
-// student.changeState('normal');
-// student.undo();
-// student.changeState('busy');
 // student.redo();
-// let testing = student.redo();
+// let ggggg = student.getState() //('busy');
 //
+// student.trigger('get_tired');
+// student.trigger('get_hungry');
+//
+// student.undo();
+// student.undo();
+//
+// student.redo();
+// student.redo();
+// ggggg = student.getState();
 //
 // let cccc= 'hjhkljh';
 /** @Created by Uladzimir Halushka **/
